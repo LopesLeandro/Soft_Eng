@@ -1,0 +1,217 @@
+import java.time.LocalDate;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Financeiro financeiro = new Financeiro();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Gestão Financeira");
+            System.out.println("-----------------------");
+            System.out.println("1 - Adicionar Gastos");
+            System.out.println("2 - Adicionar Ganhos");
+            System.out.println("3 - Relatório de Gastos");
+            System.out.println("4 - Relatório de Ganhos");
+            System.out.println("5 - Relatório Mensal");
+            System.out.println("6 - Sair");
+            System.out.println("Selecione uma opção:");
+
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    // Adicionar Gasto
+                    System.out.println("Adicionar Gasto");
+                    System.out.println("-----------------------");
+                    System.out.println("Informe o tipo de gasto:");
+                    String tipoGasto = scanner.nextLine();
+                    System.out.println("Informe a data:");
+                    LocalDate dataGasto = LocalDate.parse(scanner.nextLine());
+                    System.out.println("Informe o valor:");
+                    double valorGasto = scanner.nextDouble();
+                    scanner.nextLine(); // Consumir o restante da linha
+                    System.out.println("Selecione a forma de pagamento:");
+                    String formaDePagamento = scanner.nextLine();
+
+                    Gasto gasto = new Gasto(tipoGasto, dataGasto, valorGasto, formaDePagamento);
+                    financeiro.adicionarGasto(gasto);
+                    break;
+
+                case 2:
+                    // Adicionar Ganho
+                    System.out.println("Adicionar Ganho");
+                    System.out.println("-----------------------");
+                    System.out.println("Informe o tipo de ganho:");
+                    String tipoGanho = scanner.nextLine();
+                    System.out.println("Informe a data (formato: AAAA-MM-DD):");
+                    LocalDate dataGanho = LocalDate.parse(scanner.nextLine());
+                    System.out.println("Informe o valor:");
+                    double valorGanho = scanner.nextDouble();
+                    scanner.nextLine(); // Consumir o restante da linha
+
+                    Ganho ganho = new Ganho(tipoGanho, dataGanho, valorGanho);
+                    financeiro.adicionarGanho(ganho);
+                    break;
+
+                case 3:
+                    // Relatório de Gastos
+                    financeiro.relatorioGastos();
+                    break;
+
+                case 4:
+                    // Relatório de Ganhos
+                    financeiro.relatorioGanhos();
+                    break;
+
+                case 5:
+                    // Relatório Mensal
+                    financeiro.relatorioMensal();
+                    break;
+
+                case 6:
+                    // Sair
+                    System.out.println("Saindo...");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        }
+    }
+}
+import java.time.LocalDate;
+
+public class Gasto {
+    private String tipo;
+    private LocalDate data;
+    private double valor;
+    private String formaDePagamento;
+
+    public Gasto(String tipo, LocalDate data, double valor, String formaDePagamento) {
+        this.tipo = tipo;
+        this.data = data;
+        this.valor = valor;
+        this.formaDePagamento = formaDePagamento;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public double getValor() {
+        return valor;
+    }
+
+    public String getFormaDePagamento() {
+        return formaDePagamento;
+    }
+}
+import java.time.LocalDate;
+
+public class Ganho {
+    private String tipo;
+    private LocalDate data;
+    private double valor;
+
+    public Ganho(String tipo, LocalDate data, double valor) {
+        this.tipo = tipo;
+        this.data = data;
+        this.valor = valor;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public double getValor() {
+        return valor;
+    }
+}
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+
+public class Financeiro {
+    private List<Gasto> gastos;
+    private List<Ganho> ganhos;
+
+    public Financeiro() {
+        this.gastos = new ArrayList<>();
+        this.ganhos = new ArrayList<>();
+    }
+
+    public void adicionarGasto(Gasto gasto) {
+        gastos.add(gasto);
+    }
+
+    public void adicionarGanho(Ganho ganho) {
+        ganhos.add(ganho);
+    }
+
+    public void relatorioGastos() {
+        System.out.println("Relatório de Gastos");
+        System.out.println("--------------------");
+        Map<String, Double> gastosPorTipo = new HashMap<>();
+
+        for (Gasto gasto : gastos) {
+            gastosPorTipo.put(gasto.getTipo(), gastosPorTipo.getOrDefault(gasto.getTipo(), 0.0) + gasto.getValor());
+        }
+
+        for (Map.Entry<String, Double> entry : gastosPorTipo.entrySet()) {
+            System.out.printf("%s: R$ %.2f%n", entry.getKey(), entry.getValue());
+        }
+    }
+
+    public void relatorioGanhos() {
+        System.out.println("Relatório de Ganhos");
+        System.out.println("--------------------");
+        Map<String, Double> ganhosPorTipo = new HashMap<>();
+
+        for (Ganho ganho : ganhos) {
+            ganhosPorTipo.put(ganho.getTipo(), ganhosPorTipo.getOrDefault(ganho.getTipo(), 0.0) + ganho.getValor());
+        }
+
+        for (Map.Entry<String, Double> entry : ganhosPorTipo.entrySet()) {
+            System.out.printf("%s: R$ %.2f%n", entry.getKey(), entry.getValue());
+        }
+    }
+
+    public void relatorioMensal() {
+        System.out.println("Relatório Mensal");
+        System.out.println("-----------------");
+
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.of(now.getYear(), now.getMonth());
+
+        double totalGastos = gastos.stream()
+                .filter(gasto -> YearMonth.from(gasto.getData()).equals(currentMonth))
+                .mapToDouble(Gasto::getValor)
+                .sum();
+
+        double totalGanhos = ganhos.stream()
+                .filter(ganho -> YearMonth.from(ganho.getData()).equals(currentMonth))
+                .mapToDouble(Ganho::getValor)
+                .sum();
+
+        double saldo = totalGanhos - totalGastos;
+
+        System.out.printf("Ganho Total: R$ %.2f%n", totalGanhos);
+        System.out.printf("Gasto Total: R$ %.2f%n", totalGastos);
+        System.out.printf("Saldo: R$ %.2f%n", saldo);
+    }
+}
