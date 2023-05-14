@@ -1,5 +1,6 @@
 package Heranca.Figura;
 import java.util.Scanner;
+
 //Atividade 03 10/05/2023
 //Classe figura: -nome:String / +obterArea():double / +getNome():String / +setNome(value: String)
 //Desenvolva as classes retangulo e circulo, estendendo a classe figura. Realize a sobrecarga do método obterArea().
